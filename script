@@ -1,0 +1,63 @@
+python - <<'PY'
+from pathlib import Path
+
+a = Path.home() / "Escritorio/dataset_graffitis/labels/train"
+b = Path.home() / "Escritorio/dataset_graffitis2/labels/train"
+out = Path.home() / "Escritorio/dataset_final/labels/train"
+
+out.mkdir(parents=True, exist_ok=True)
+
+files = set()
+
+for folder in [a, b]:
+    for file in folder.glob("*.txt"):
+        files.add(file.name)
+
+print(f"📁 Archivos encontrados: {len(files)}")
+
+for name in files:
+
+    content = ""
+
+    p1 = a / name
+    p2 = b / name
+
+    if p1.exists():
+        content += p1.read_text()
+
+    if p2.exists():
+        content += p2.read_text()
+
+    (out / name).write_text(content)
+
+print("✅ Fusión completada")
+print(f"📂 Guardado en: {out}")
+
+
+python - <<'PY'
+from pathlib import Path
+
+folder = Path.home() / "Escritorio/dataset_graffitis2/labels/train"
+
+count = 0
+
+for txt_file in folder.glob("*.txt"):
+    new_lines = []
+
+    with open(txt_file, "r") as f:
+        for line in f:
+            parts = line.strip().split()
+
+            if parts and parts[0] == "0":
+                parts[0] = "1"
+
+            new_lines.append(" ".join(parts) + "\n")
+
+    with open(txt_file, "w") as f:
+        f.writelines(new_lines)
+
+    count += 1
+
+print(f"✅ Modificados {count} archivos.")
+
+

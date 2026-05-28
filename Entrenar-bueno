@@ -1,0 +1,55 @@
+PASOS PARA ENTRENAR UNA RED NEURONAL PARA IDENTIFICAR TATUAJES CON YOLO
+pasos previos: 
+- crear un entorno virtual ->
+conda create -n yolo_tatuajes python=3.10
+conda activate yolo_tatuajes
+instalar yolo -> pip install ultralytics
+
+preparar el data set: 
+
+dataset_tatuajes
+│
+├── images
+│   ├── train -80% de las imaganes
+│   └── val - 20% de las imaganes
+│
+├── labels
+│   ├── train -80% de las etiquetas
+│   └── val -20% las etiquetas de las imagenes val
+
+PASOS
+
+activar entorno source yolo_graffiti/bin/activate
+
+1. Primero hay que instalar LabelImg para dibujar las BoundingBoxes, para ello, hay que ejecutar: pip install labelImg
+
+2. Cuando se abre el programa hay que abrir la carpeta donde tenemos las imágenes, seleccionar el formato YOLO (en el panel de la izquierda), darle a create bounding box, dibujarla,
+ e ir guardando cada imagen. se genera un .txt por imagen con algo así: 0 0.45 0.52 0.30 0.40. En este caso se ha seleccionado clase 0 que es tatuaje. 
+
+3. Crear el archivo de configuración: hay que crear tatuajes.yaml -> nano tatuajes.yaml
+    meter esto dentro del yaml: 
+        path: /home/leyre/Beca/dataset_tatuajes
+
+        train: images/train
+        val: images/val
+
+        names:
+          0: tatuaje
+    para guardarlo: pulsar CTRL + O, ENTER, CTRL + X
+
+4. entrenar el modelo (desde el entorno virtual): yolo detect train data=tatuajes.yaml model=yolov8n.pt epochs=50 imgsz=640
+    
+5. probar el modelo -> yolo detect predict model=runs/detect/train/weights/best.pt source=/ruta/imagenes conf=0.4 iou=0.5
+    esta instruccion:
+        - carga el modelo entrenado runs/detect/train/weights/best.pt
+        - lee las imagenes que pongas en: source=/ruta/imagenes
+        - genera automáticamente una carpeta en: runs/detect/predict
+        - tienes esto al final: 
+            runs
+             └── detect
+                  └── predict
+                        imagen1.jpg
+                        imagen2.jpg
+
+
+
